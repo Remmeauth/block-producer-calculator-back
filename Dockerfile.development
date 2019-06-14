@@ -1,0 +1,8 @@
+FROM python:3.7
+
+WORKDIR /block-producer-calculator-back
+COPY . /block-producer-calculator-back
+
+RUN pip3 install -r /block-producer-calculator-back/requirements.txt
+
+CMD python3 calculator/server.py
