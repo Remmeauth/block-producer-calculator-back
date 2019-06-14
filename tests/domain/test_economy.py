@@ -1,14 +1,15 @@
-from calculator.domain.block_producer import BlockProducer
+"""
+Provide tests for block producers.
+"""
 from calculator.domain.economy import Economy
-from calculator.domain.block import BlockCost
 
 
-
-
-
-def test_block_producers_stakes():
-
-    expected_result = 84_507_042.3
+def test_get_block_producers_stakes():
+    """
+    Case: get block producers stakes.
+    Expect: stakes are returned.
+    """
+    expected_result = 84_507_042.25352111
 
     economy = Economy(
         money_per_month=50_000,
