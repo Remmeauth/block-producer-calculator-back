@@ -1,45 +1,50 @@
 """
-Docs.
+Provide implementation of the reward.
 """
-from calculator.economy import Economy
-from calculator.block_producer import BlockProducer
+from calculator.domain.block import (
+    BlockCost,
+    BlockProducer,
+)
+from calculator.domain.economy import Economy
 
 
 class BlockProducerReward:
     """
-    Docs.
+    Implements block producer reward.
     """
 
-    def __init__(self, economy: Economy, block_producer: BlockProducer):
+    def __init__(self, economy: Economy, block_cost: BlockCost, block_producer: BlockProducer):
         """
-        Docs.
+        Constructor.
         """
         self.economy = economy
+        self.block_cost = block_cost
         self.block_producer = block_producer
 
     def get(self):
         """
-        Docs.
+        Get a block producer reward.
         """
-        return (self.block_producer.stake * self.economy.block_reward / self.economy.stakes) * \
+        return (self.block_producer.stake * self.block_cost.get() / self.economy.active_block_producers_stakes) * \
             self.economy.block_producers_reward_coefficient
 
 
 class ActiveBlockProducerReward:
     """
-    Docs.
+    Implements an active block producer reward.
     """
 
-    def __init__(self, economy: Economy, block_producer: BlockProducer):
+    def __init__(self, economy: Economy, block_cost: BlockCost, block_producer: BlockProducer):
         """
-        Docs.
+        Constructor.
         """
         self.economy = economy
+        self.block_cost = block_cost
         self.block_producer = block_producer
 
     def get(self):
         """
-        Docs.
+        Get an active block producer reward.
         """
-        return (self.block_producer.votes * self.economy.block_reward / self.economy.votes) * \
+        return (self.block_producer.votes * self.block_cost.get() / self.economy.active_block_producers_votes) * \
             self.economy.active_block_producers_reward_coefficient
