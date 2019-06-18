@@ -1,6 +1,7 @@
 """
 Provide implementation of the economy.
 """
+from calculator.constants import TWELVE_MONTHS
 
 
 class Economy:
@@ -34,6 +35,8 @@ class Economy:
     def blocks_per_month(self):
         """
         Get blocks per month.
+
+        The number is 5 184 000. One block is produced in 0.5 seconds (2 blocks per second).
         """
         return 60 * 60 * 24 * 30 * 2
 
@@ -42,14 +45,14 @@ class Economy:
         """
         Get block reward.
         """
-        return self.money_per_month / (self.blocks_per_month * 12)
+        return self.money_per_month / (self.blocks_per_month * TWELVE_MONTHS)
 
     @property
     def block_producers_stakes(self):
         """
         Get block producers stakes.
         """
-        return self.money_per_month / self._token_price * 12
+        return self.money_per_month / self._token_price * TWELVE_MONTHS
 
     @property
     def active_block_producers_stakes(self):
