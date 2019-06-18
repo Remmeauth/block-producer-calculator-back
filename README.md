@@ -26,6 +26,9 @@ $ curl -X POST 127.0.0.1:8000/investments-payback/month \
                 "votes": 1000000
             }
          }' | python -m json.tool
+{
+    "payback": 145774.64788732395
+}
 ```
 
 ## Development
