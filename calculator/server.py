@@ -19,7 +19,7 @@ from calculator.domain.reward import (
     ActiveBlockProducerReward,
     BlockProducerReward,
 )
-from forms import CalculateInvestmentsPaybackPerMonth
+from calculator.forms import CalculateInvestmentsPaybackPerMonth
 
 server = Flask(__name__)
 

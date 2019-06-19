@@ -41,13 +41,6 @@ class Economy:
         return 60 * 60 * 24 * 30 * 2
 
     @property
-    def block_reward(self):
-        """
-        Get block reward.
-        """
-        return self.money_per_month / (self.blocks_per_month * TWELVE_MONTHS)
-
-    @property
     def block_producers_stakes(self):
         """
         Get block producers stakes.
