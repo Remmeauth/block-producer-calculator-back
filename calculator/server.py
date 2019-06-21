@@ -7,8 +7,8 @@ from flask import (
     Flask,
     jsonify,
     request,
-
 )
+from flask_cors import CORS
 
 from calculator.domain.block import (
     BlockCost,
@@ -22,6 +22,7 @@ from calculator.domain.reward import (
 from calculator.forms import CalculateInvestmentsPaybackPerMonth
 
 server = Flask(__name__)
+CORS(server)
 
 
 @server.route('/investments-payback/month', methods=['POST'])
