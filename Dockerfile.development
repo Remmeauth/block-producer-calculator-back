@@ -1,0 +1,12 @@
+FROM python:3.7
+
+WORKDIR /block-producer-calculator-back
+COPY . /block-producer-calculator-back
+
+ENV PYTHONPATH="$PYTHONPATH:/block-producer-calculator-back/calculator"
+
+RUN pip3 install \
+    -r /block-producer-calculator-back/requirements.txt \
+    -r /block-producer-calculator-back/requirements-tests.txt
+
+CMD python3 calculator/server.py
