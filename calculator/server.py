@@ -1,12 +1,25 @@
 """
-Provide endpoints and entrypoints for the server.
+Provide endpoints and entrypoints for block producer investments payback calculator.
 """
+from http import HTTPStatus
+
 from flask import (
     Flask,
     jsonify,
     request,
 
 )
+
+from calculator.domain.block import (
+    BlockCost,
+    BlockProducer,
+)
+from calculator.domain.economy import Economy
+from calculator.domain.reward import (
+    ActiveBlockProducerReward,
+    BlockProducerReward,
+)
+from calculator.forms import CalculateInvestmentsPaybackPerMonth
 
 server = Flask(__name__)
 
@@ -17,7 +30,44 @@ def calculate_investments_payback():
     Calculate investments payback per month.
     """
     request_parameters = request.get_json()
-    return jsonify(request_parameters)
+
+    arguments, errors = CalculateInvestmentsPaybackPerMonth().load({
+        'money_per_month': request_parameters.get('economy').get('money_per_month'),
+        'token_price': request_parameters.get('economy').get('token_price'),
+        'active_block_producers_votes': request_parameters.get('economy').get('active_block_producers_votes'),
+        'active_block_producers_stakes': request_parameters.get('economy').get('active_block_producers_stakes'),
+        'stake': request_parameters.get('block_producer').get('stake'),
+        'votes': request_parameters.get('block_producer').get('votes'),
+    })
+
+    if errors:
+        return jsonify({'errors': errors}), HTTPStatus.BAD_REQUEST
+
+    money_per_month = arguments.get('money_per_month')
+    token_price = arguments.get('token_price')
+    active_block_producers_votes = arguments.get('active_block_producers_votes')
+    active_block_producers_stakes = arguments.get('active_block_producers_stakes')
+    block_producer_stake = arguments.get('stake')
+    block_producer_votes = arguments.get('votes')
+
+    economy = Economy(
+        money_per_month=money_per_month,
+        token_price=token_price,
+        active_block_producers_votes=active_block_producers_votes,
+        active_block_producers_stakes=active_block_producers_stakes,
+    )
+    block_cost = BlockCost(economy=economy)
+    block_producer = BlockProducer(stake=block_producer_stake, votes=block_producer_votes)
+
+    block_producer_reward = BlockProducerReward(economy=economy, block_cost=block_cost, block_producer=block_producer)
+
+    active_block_producer_reward = ActiveBlockProducerReward(
+        economy=economy, block_cost=block_cost, block_producer=block_producer,
+    )
+
+    result = (block_producer_reward.get() + active_block_producer_reward.get()) * economy.blocks_per_month
+
+    return jsonify({'payback': result}), HTTPStatus.OK
 
 
 if __name__ == '__main__':
