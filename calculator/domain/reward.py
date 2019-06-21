@@ -25,7 +25,9 @@ class BlockProducerReward:
         """
         Get a block producer reward.
         """
-        return (self.block_producer.stake * self.block_cost.get() / self.economy.active_block_producers_stakes) * \
+        all_block_producers_stakes = self.economy.block_producers_stakes + self.economy.active_block_producers_stakes
+
+        return (self.block_producer.stake * self.block_cost.get() / all_block_producers_stakes) * \
             self.economy.block_producers_reward_coefficient
 
 

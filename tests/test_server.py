@@ -10,7 +10,7 @@ def test_calculate_investments_payback(client):
     Expect: payback is returned.
     """
     expected_response = {
-        'payback': 145774.64788732395,
+        'payback': 144691.22426868905,
     }
 
     response = client.post('/investments-payback/month', json={

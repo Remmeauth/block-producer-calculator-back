@@ -47,8 +47,8 @@ def calculate_investments_payback():
     token_price = arguments.get('token_price')
     active_block_producers_votes = arguments.get('active_block_producers_votes')
     active_block_producers_stakes = arguments.get('active_block_producers_stakes')
-    stake = arguments.get('stake')
-    votes = arguments.get('votes')
+    block_producer_stake = arguments.get('stake')
+    block_producer_votes = arguments.get('votes')
 
     economy = Economy(
         money_per_month=money_per_month,
@@ -57,7 +57,7 @@ def calculate_investments_payback():
         active_block_producers_stakes=active_block_producers_stakes,
     )
     block_cost = BlockCost(economy=economy)
-    block_producer = BlockProducer(stake=stake, votes=votes)
+    block_producer = BlockProducer(stake=block_producer_stake, votes=block_producer_votes)
 
     block_producer_reward = BlockProducerReward(economy=economy, block_cost=block_cost, block_producer=block_producer)
 
