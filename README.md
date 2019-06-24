@@ -40,6 +40,16 @@ $ curl -X POST 127.0.0.1:8000/investments-payback/month \
 }
 ```
 
+`GET | /token/price/usd` — get the price of the `Remme` token in dollars (USD).
+
+```bash
+$ curl 127.0.0.1:8000/token/price/usd -H "Accept: application/json" \
+      -H "Content-type: application/json" | python -m json.tool
+{
+    "price": 0.0071
+}
+```
+
 ## Development
 
 Clone the project with the following command:
@@ -59,6 +69,7 @@ To run the project, use the following command. It will start the server and occu
 
 ```bash
 $ docker run -p 8000:8000 -v $PWD:/block-producer-calculator-back \
+      -e COIN_MARKET_CAP_API_KEY='8d63f1d0-da4e-4422-ad30-be5c298e4c01' \
       --name block-producer-calculator-back block-producer-calculator-back
 ```
 
@@ -91,6 +102,7 @@ $ docker build -t block-producer-calculator-back . -f Dockerfile.production
 To run the project, use the following command. It will start the server and occupate current terminal session:
 
 ```bash
-$ docker run -p 8000:8000 -e PORT=8000 -v $PWD:/block-producer-calculator-back \
+$ docker run -p 8000:8000 -e PORT=8000 -e COIN_MARKET_CAP_API_KEY='8d63f1d0-da4e-4422-ad30-be5c298e4c01' \
+      -v $PWD:/block-producer-calculator-back \
       --name block-producer-calculator-back block-producer-calculator-back
 ```

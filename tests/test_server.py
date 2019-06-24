@@ -4,6 +4,45 @@ Provide tests for block producer investments payback calculator.
 from http import HTTPStatus
 
 
+def test_get_token_price_in_usd(client, mocker):
+    """
+    Case: get Remme token price in dollars (usd)
+    Expect: price as float is returned.
+    """
+    class Response:
+        """
+        Fake response.
+        """
+
+        def json(self):
+            """
+            Fake json method.
+            """
+            return {
+                'data': {
+                    'REM': {
+                        'quote': {
+                            'USD': {
+                                'price': 0.0071
+                            }
+                        }
+                    }
+                }
+            }
+
+    expected_response = {
+        'price': 0.0071,
+    }
+
+    mock_token_price_in_usd = mocker.patch('requests.get')
+    mock_token_price_in_usd.return_value = Response()
+
+    response = client.get('/token/price/usd')
+
+    assert expected_response == response.json
+    assert HTTPStatus.OK == response.status_code
+
+
 def test_calculate_investments_payback(client):
     """
     Case: calculate investments payback per month.

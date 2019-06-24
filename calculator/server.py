@@ -1,13 +1,16 @@
 """
 Provide endpoints and entrypoints for block producer investments payback calculator.
 """
+import os
 from http import HTTPStatus
 
+import requests
 from flask import (
     Flask,
     jsonify,
     request,
 )
+from flask_caching import Cache
 from flask_cors import CORS
 
 from calculator.domain.block import (
@@ -20,9 +23,33 @@ from calculator.domain.reward import (
     BlockProducerReward,
 )
 from calculator.forms import CalculateInvestmentsPaybackPerMonth
+from calculator.constants import (
+    REMME_TOKEN_PRICE_IN_USD_COIN_MARKET_CAP_API_URL,
+    HOUR_IN_SECONDS,
+)
 
 server = Flask(__name__)
 CORS(server)
+
+cache = Cache(server, config={'CACHE_TYPE': 'simple'})
+
+
+@server.route('/token/price/usd', methods=['GET'])
+@cache.cached(timeout=HOUR_IN_SECONDS)
+def get_token_price_in_usd():
+    """
+    Get Remme token price in dollars (USD).
+    """
+    get_token_price_response = requests.get(REMME_TOKEN_PRICE_IN_USD_COIN_MARKET_CAP_API_URL, headers={
+        'X-CMC_PRO_API_KEY': os.environ.get('COIN_MARKET_CAP_API_KEY'),
+    }).json()
+
+    try:
+        result = get_token_price_response['data']['REM']['quote']['USD']['price']
+    except KeyError:
+        return jsonify({'errors': 'Errors have been occurred during the request token price.'}), HTTPStatus.BAD_REQUEST
+
+    return jsonify({'price': result}), HTTPStatus.OK
 
 
 @server.route('/investments-payback/month', methods=['POST'])
