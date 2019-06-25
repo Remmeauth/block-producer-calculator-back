@@ -10,14 +10,14 @@ Block producer investments payback calculator.
 
 `POST | /investments-payback/month` — calculate active block producer investments payback per month.
 
-| Arguments                     | Type    | Required | Description                                                         |
-| :---------------------------: | :-----: | :------: | ------------------------------------------------------------------- |
-| money_per_month               | Integer | Yes      | How much money comes into blockchain per month.                     |
-| token_price                   | Float   | Yes      | Token price.                                                        |
-| active_block_producers_stakes | Integer | Yes      | Active block producers stakes number in the blockchain besides you. |
-| active_block_producers_votes  | Integer | Yes      | Active block producers votes number in the blockchain besides you.  |
-| stake                         | Integer | Yes      | Your block producer's stake number.                                 |
-| votes                         | Integer | Yes      | Your block producer's votes number.                                 |
+| Arguments                     | Type    | Required | Description                                                        |
+| :---------------------------: | :-----: | :------: | ------------------------------------------------------------------ |
+| money_per_month               | Integer | Yes      | How much money comes into blockchain per month.                    |
+| token_price                   | Float   | Yes      | Token price.                                                       |
+| all_block_producers_stakes    | Integer | Yes      | All block producers stakes number in the blockchain besides you.   |
+| active_block_producers_votes  | Integer | Yes      | Active block producers votes number in the blockchain besides you. |
+| stake                         | Integer | Yes      | Your block producer's stake number.                                |
+| votes                         | Integer | Yes      | Your block producer's votes number.                                |
 
 ```bash
 $ curl -X POST 127.0.0.1:8000/investments-payback/month \
@@ -27,12 +27,12 @@ $ curl -X POST 127.0.0.1:8000/investments-payback/month \
             "economy": {
                 "money_per_month": 50000,
                 "token_price": 0.0071,
-                "active_block_producers_stakes": 300000000,
-                "active_block_producers_votes": 10000000
+                "all_block_producers_stakes": 350000000,
+                "active_block_producers_votes": 300000000
             },
             "block_producer": {
                 "stake": 300000,
-                "votes": 1000000
+                "votes": 300000
             }
          }' | python -m json.tool
 {
