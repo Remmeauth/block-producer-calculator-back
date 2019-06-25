@@ -49,19 +49,19 @@ def test_calculate_investments_payback(client):
     Expect: payback is returned.
     """
     expected_response = {
-        'payback': 144691.22426868905,
+        'payback': 5_628.777_144_540_292
     }
 
     response = client.post('/investments-payback/month', json={
         'economy': {
-            'money_per_month': 50000,
+            'money_per_month': 50_000,
             'token_price': 0.0071,
-            'active_block_producers_stakes': 300000000,
-            'active_block_producers_votes': 10000000,
+            'all_block_producers_stakes': 350_000_000,
+            'active_block_producers_votes': 300_000_000,
         },
         'block_producer': {
-            'stake': 300000,
-            'votes': 1000000,
+            'stake': 300_000,
+            'votes': 300_000,
         },
     })
 
@@ -78,7 +78,7 @@ def test_calculate_investments_payback_with_invalid_arguments(client):
         'economy': {
             'money_per_month': 'invalid_argument',
             'token_price': 'invalid_argument',
-            'active_block_producers_stakes': 'invalid_argument',
+            'all_block_producers_stakes': 'invalid_argument',
             'active_block_producers_votes': 'invalid_argument',
         },
         'block_producer': {
@@ -91,7 +91,7 @@ def test_calculate_investments_payback_with_invalid_arguments(client):
         'errors': {
             'money_per_month':  ['Not a valid integer.'],
             'token_price':  ['Not a valid number.'],
-            'active_block_producers_stakes':  ['Not a valid integer.'],
+            'all_block_producers_stakes':  ['Not a valid integer.'],
             'active_block_producers_votes':  ['Not a valid integer.'],
             'stake':  ['Not a valid integer.'],
             'votes':  ['Not a valid integer.'],

@@ -1,7 +1,6 @@
 """
 Provide implementation of the economy.
 """
-from calculator.constants import TWELVE_MONTHS
 
 
 class Economy:
@@ -13,7 +12,7 @@ class Economy:
             self,
             money_per_month: int,
             token_price: float,
-            active_block_producers_stakes: int,
+            all_block_producers_stakes: int,
             active_block_producers_votes: int,
     ):
         """
@@ -21,7 +20,7 @@ class Economy:
         """
         self._money_per_month = money_per_month
         self._token_price = token_price
-        self._active_block_producers_stakes = active_block_producers_stakes
+        self._all_block_producers_stakes = all_block_producers_stakes
         self._active_block_producers_votes = active_block_producers_votes
 
     @property
@@ -41,18 +40,18 @@ class Economy:
         return 60 * 60 * 24 * 30 * 2
 
     @property
-    def block_producers_stakes(self):
+    def token_price(self):
         """
-        Get block producers stakes.
+        Get token price.
         """
-        return self.money_per_month / self._token_price * TWELVE_MONTHS
+        return self._token_price
 
     @property
-    def active_block_producers_stakes(self):
+    def all_block_producers_stakes(self):
         """
-        Get an active block producers stakes.
+        Get all block producers stakes.
         """
-        return self._active_block_producers_stakes
+        return self._all_block_producers_stakes
 
     @property
     def active_block_producers_votes(self):
@@ -74,10 +73,3 @@ class Economy:
         Get an active block producers reward coefficient.
         """
         return 0.2
-
-    @property
-    def tax_reward_coefficient(self):
-        """
-        Get tax reward coefficient.
-        """
-        return 0.1

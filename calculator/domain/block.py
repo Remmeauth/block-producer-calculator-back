@@ -4,9 +4,9 @@ Provide implementation of the block.
 from calculator.domain.economy import Economy
 
 
-class BlockCost:
+class BlockReward:
     """
-    Implements block cost.
+    Implements block reward.
     """
 
     def __init__(self, economy: Economy):
@@ -17,9 +17,9 @@ class BlockCost:
 
     def get(self):
         """
-        Get a block cost.
+        Get a block reward.
         """
-        return self.economy.block_producers_stakes / (self.economy.blocks_per_month * 12)
+        return self.economy.money_per_month / self.economy.token_price / self.economy.blocks_per_month
 
 
 class BlockProducer:
