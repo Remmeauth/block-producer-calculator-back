@@ -13,9 +13,13 @@ from flask import (
 from flask_caching import Cache
 from flask_cors import CORS
 
+from calculator.constants import (
+    HOUR_IN_SECONDS,
+    REMME_TOKEN_PRICE_IN_USD_COIN_MARKET_CAP_API_URL,
+)
 from calculator.domain.block import (
-    BlockCost,
     BlockProducer,
+    BlockReward,
 )
 from calculator.domain.economy import Economy
 from calculator.domain.reward import (
@@ -23,10 +27,7 @@ from calculator.domain.reward import (
     BlockProducerReward,
 )
 from calculator.forms import CalculateInvestmentsPaybackPerMonth
-from calculator.constants import (
-    REMME_TOKEN_PRICE_IN_USD_COIN_MARKET_CAP_API_URL,
-    HOUR_IN_SECONDS,
-)
+
 
 server = Flask(__name__)
 CORS(server)
@@ -62,8 +63,8 @@ def calculate_investments_payback():
     arguments, errors = CalculateInvestmentsPaybackPerMonth().load({
         'money_per_month': request_parameters.get('economy').get('money_per_month'),
         'token_price': request_parameters.get('economy').get('token_price'),
+        'all_block_producers_stakes': request_parameters.get('economy').get('all_block_producers_stakes'),
         'active_block_producers_votes': request_parameters.get('economy').get('active_block_producers_votes'),
-        'active_block_producers_stakes': request_parameters.get('economy').get('active_block_producers_stakes'),
         'stake': request_parameters.get('block_producer').get('stake'),
         'votes': request_parameters.get('block_producer').get('votes'),
     })
@@ -73,24 +74,26 @@ def calculate_investments_payback():
 
     money_per_month = arguments.get('money_per_month')
     token_price = arguments.get('token_price')
+    all_block_producers_stakes = arguments.get('all_block_producers_stakes')
     active_block_producers_votes = arguments.get('active_block_producers_votes')
-    active_block_producers_stakes = arguments.get('active_block_producers_stakes')
     block_producer_stake = arguments.get('stake')
     block_producer_votes = arguments.get('votes')
 
     economy = Economy(
         money_per_month=money_per_month,
         token_price=token_price,
+        all_block_producers_stakes=all_block_producers_stakes,
         active_block_producers_votes=active_block_producers_votes,
-        active_block_producers_stakes=active_block_producers_stakes,
     )
-    block_cost = BlockCost(economy=economy)
+    block_reward = BlockReward(economy=economy)
     block_producer = BlockProducer(stake=block_producer_stake, votes=block_producer_votes)
 
-    block_producer_reward = BlockProducerReward(economy=economy, block_cost=block_cost, block_producer=block_producer)
+    block_producer_reward = BlockProducerReward(
+        economy=economy, block_reward=block_reward, block_producer=block_producer,
+    )
 
     active_block_producer_reward = ActiveBlockProducerReward(
-        economy=economy, block_cost=block_cost, block_producer=block_producer,
+        economy=economy, block_reward=block_reward, block_producer=block_producer,
     )
 
     result = (block_producer_reward.get() + active_block_producer_reward.get()) * economy.blocks_per_month
