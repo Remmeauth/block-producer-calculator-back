@@ -7,9 +7,22 @@ from marshmallow import (
 )
 
 
-class CalculateInvestmentsPaybackPerMonth(Schema):
+class CalculateInvestmentsPaybackPerMonthForm(Schema):
     """
     Calculate investments payback per month form.
+    """
+
+    money_per_month = fields.Integer()
+    token_price = fields.Float()
+    all_block_producers_stakes = fields.Integer()
+    active_block_producers_votes = fields.Integer()
+    stake = fields.Integer()
+    votes = fields.Integer()
+
+
+class CalculateRoiForm(Schema):
+    """
+    Calculate returning on investments.
     """
 
     money_per_month = fields.Integer()
