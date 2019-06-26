@@ -24,6 +24,20 @@ class Economy:
         self._active_block_producers_votes = active_block_producers_votes
 
     @property
+    def token_price(self):
+        """
+        Get token price.
+        """
+        return self._token_price
+
+    @token_price.setter
+    def token_price(self, new_token_price):
+        """
+        Set token price.
+        """
+        self._token_price = new_token_price
+
+    @property
     def money_per_month(self):
         """
         Get money per month.
@@ -38,13 +52,6 @@ class Economy:
         The number is 5 184 000. One block is produced in 0.5 seconds (2 blocks per second).
         """
         return 60 * 60 * 24 * 30 * 2
-
-    @property
-    def token_price(self):
-        """
-        Get token price.
-        """
-        return self._token_price
 
     @property
     def all_block_producers_stakes(self):

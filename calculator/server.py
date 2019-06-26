@@ -26,8 +26,11 @@ from calculator.domain.reward import (
     ActiveBlockProducerReward,
     BlockProducerReward,
 )
-from calculator.forms import CalculateInvestmentsPaybackPerMonth
-
+from calculator.domain.roi import Roi
+from calculator.forms import (
+    CalculateInvestmentsPaybackPerMonthForm,
+    CalculateRoiForm,
+)
 
 server = Flask(__name__)
 CORS(server)
@@ -50,17 +53,17 @@ def get_token_price_in_usd():
     except KeyError:
         return jsonify({'errors': 'Errors have been occurred during the request token price.'}), HTTPStatus.BAD_REQUEST
 
-    return jsonify({'price': result}), HTTPStatus.OK
+    return jsonify({'result': result}), HTTPStatus.OK
 
 
-@server.route('/investments-payback/month', methods=['POST'])
-def calculate_investments_payback():
+@server.route('/profit/month', methods=['POST'])
+def calculate_profit_per_month():
     """
     Calculate investments payback per month.
     """
     request_parameters = request.get_json()
 
-    arguments, errors = CalculateInvestmentsPaybackPerMonth().load({
+    arguments, errors = CalculateInvestmentsPaybackPerMonthForm().load({
         'money_per_month': request_parameters.get('economy').get('money_per_month'),
         'token_price': request_parameters.get('economy').get('token_price'),
         'all_block_producers_stakes': request_parameters.get('economy').get('all_block_producers_stakes'),
@@ -96,9 +99,56 @@ def calculate_investments_payback():
         economy=economy, block_reward=block_reward, block_producer=block_producer,
     )
 
-    result = (block_producer_reward.get() + active_block_producer_reward.get()) * economy.blocks_per_month
+    month_reward_in_tokens = \
+        (block_producer_reward.get() + active_block_producer_reward.get()) * economy.blocks_per_month
 
-    return jsonify({'payback': result}), HTTPStatus.OK
+    result = {
+        'tokens': month_reward_in_tokens,
+        'fiat': month_reward_in_tokens * economy.token_price,
+    }
+
+    return jsonify({'result': result}), HTTPStatus.OK
+
+
+@server.route('/profit/roi', methods=['POST'])
+def calculate_roi():
+    """
+    Calculate returning on investment for 4 years.
+    """
+    request_parameters = request.get_json()
+
+    arguments, errors = CalculateRoiForm().load({
+        'money_per_month': request_parameters.get('economy').get('money_per_month'),
+        'token_price': request_parameters.get('economy').get('token_price'),
+        'all_block_producers_stakes': request_parameters.get('economy').get('all_block_producers_stakes'),
+        'active_block_producers_votes': request_parameters.get('economy').get('active_block_producers_votes'),
+        'stake': request_parameters.get('block_producer').get('stake'),
+        'votes': request_parameters.get('block_producer').get('votes'),
+    })
+
+    if errors:
+        return jsonify({'errors': errors}), HTTPStatus.BAD_REQUEST
+
+    money_per_month = arguments.get('money_per_month')
+    token_price = arguments.get('token_price')
+    all_block_producers_stakes = arguments.get('all_block_producers_stakes')
+    active_block_producers_votes = arguments.get('active_block_producers_votes')
+    block_producer_stake = arguments.get('stake')
+    block_producer_votes = arguments.get('votes')
+
+    economy = Economy(
+        money_per_month=money_per_month,
+        token_price=token_price,
+        all_block_producers_stakes=all_block_producers_stakes,
+        active_block_producers_votes=active_block_producers_votes,
+    )
+    block_reward = BlockReward(economy=economy)
+    block_producer = BlockProducer(stake=block_producer_stake, votes=block_producer_votes)
+
+    roi = Roi(economy=economy, block_reward=block_reward, block_producer=block_producer)
+    result = roi.calculate()
+
+    return jsonify({'result': result}), HTTPStatus.OK
 
 
 if __name__ == '__main__':
