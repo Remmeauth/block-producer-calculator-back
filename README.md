@@ -20,40 +20,7 @@ Block producer investments payback calculator.
 | votes                         | Integer | Yes      | Your block producer's votes number.                                |
 
 ```bash
-$ curl -X POST 127.0.0.1:8000/investments-payback/month \
-      -H "Accept: application/json" \
-      -H "Content-type: application/json" \
-      -d $'{
-            "economy": {
-                "money_per_month": 50000,
-                "token_price": 0.0071,
-                "all_block_producers_stakes": 350000000,
-                "active_block_producers_votes": 300000000
-            },
-            "block_producer": {
-                "stake": 300000,
-                "votes": 300000
-            }
-         }' | python -m json.tool
-{
-    "payback": 145774.64788732395
-}
-```
-
-`GET | /token/price/usd` — get the price of the `Remme` token in dollars (USD).
-
-```bash
-$ curl 127.0.0.1:8000/token/price/usd -H "Accept: application/json" \
-      -H "Content-type: application/json" | python -m json.tool
-{
-    "price": 0.0071
-}
-```
-
-`POST | /roi` — calculate returning on investment for 4 years.
-
-```bash
-$ curl -X POST 127.0.0.1:8000/roi \
+$ curl -X POST 127.0.0.1:8000/profit/month \
       -H "Accept: application/json" \
       -H "Content-type: application/json" \
       -d $'{
@@ -70,29 +37,63 @@ $ curl -X POST 127.0.0.1:8000/roi \
          }' | python -m json.tool
 {
     "result": {
-        "percent": 26.220804592280146,
-        "statistics_per_month": [
-            {
-                "block_producer_stake": 300000,
-                "month": 1,
+        "fiat": 39.964317726236075,
+        "tokens": 5628.777144540292
+    }
+}
+```
+
+`POST | /profit/roi` — calculate returning on investment for 4 years.
+
+```bash
+$ curl -X POST 127.0.0.1:8000/profit/roi \
+      -H "Accept: application/json" \
+      -H "Content-type: application/json" \
+      -d $'{
+            "economy": {
+                "money_per_month": 50000,
                 "token_price": 0.0071,
-                "token_price_growth_percent": 10
+                "all_block_producers_stakes": 350000000,
+                "active_block_producers_votes": 300000000
             },
+            "block_producer": {
+                "stake": 300000,
+                "votes": 300000
+            }
+         }' | python -m json.tool
+{
+    'result': {
+        'percent': 26.220804592280146,
+        'statistics_per_month': [
             {
-                "block_producer_stake": 305628.7771445403,
-                "month": 2,
-                "token_price": 0.00781,
-                "token_price_growth_percent": 9.8
+                'block_producer_stake': 300000,
+                'month': 1,
+                'month_reward_in_fiat': 39.964317726236075,
+                'month_reward_in_tokens': 5628.777144540292,
+                'token_price': 0.0071,
+                'token_price_growth_percent': 10
             },
             ...
             {
-                "block_producer_stake": 378662.41377684043,
-                "month": 48,
-                "token_price": 0.13743619007484045,
-                "token_price_growth_percent": 3.8692390084819794
+                'block_producer_stake': 378662.41377684043,
+                'month': 48,
+                'month_reward_in_fiat': 47.8153284351674,
+                'month_reward_in_tokens': 347.90929819234447,
+                'token_price': 0.13743619007484045,
+                'token_price_growth_percent': 3.8692390084819794
             }
         ]
     }
+}
+```
+
+`GET | /token/price/usd` — get the price of the `Remme` token in dollars (USD).
+
+```bash
+$ curl 127.0.0.1:8000/token/price/usd -H "Accept: application/json" \
+      -H "Content-type: application/json" | python -m json.tool
+{
+    "result": 0.007113124
 }
 ```
 
