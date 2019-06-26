@@ -53,11 +53,11 @@ def get_token_price_in_usd():
     except KeyError:
         return jsonify({'errors': 'Errors have been occurred during the request token price.'}), HTTPStatus.BAD_REQUEST
 
-    return jsonify({'price': result}), HTTPStatus.OK
+    return jsonify({'result': result}), HTTPStatus.OK
 
 
-@server.route('/investments-payback/month', methods=['POST'])
-def calculate_investments_payback():
+@server.route('/profit/month', methods=['POST'])
+def calculate_profit_per_month():
     """
     Calculate investments payback per month.
     """
@@ -99,12 +99,18 @@ def calculate_investments_payback():
         economy=economy, block_reward=block_reward, block_producer=block_producer,
     )
 
-    result = (block_producer_reward.get() + active_block_producer_reward.get()) * economy.blocks_per_month
+    month_reward_in_tokens = \
+        (block_producer_reward.get() + active_block_producer_reward.get()) * economy.blocks_per_month
 
-    return jsonify({'payback': result}), HTTPStatus.OK
+    result = {
+        'tokens': month_reward_in_tokens,
+        'fiat': month_reward_in_tokens * economy.token_price,
+    }
+
+    return jsonify({'result': result}), HTTPStatus.OK
 
 
-@server.route('/roi', methods=['POST'])
+@server.route('/profit/roi', methods=['POST'])
 def calculate_roi():
     """
     Calculate returning on investment for 4 years.

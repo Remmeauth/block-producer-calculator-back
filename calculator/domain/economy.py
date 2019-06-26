@@ -26,14 +26,14 @@ class Economy:
     @property
     def token_price(self):
         """
-        Get token price in dollars (USD).
+        Get token price.
         """
         return self._token_price
 
     @token_price.setter
     def token_price(self, new_token_price):
         """
-        Set token price in dollars (USD).
+        Set token price.
         """
         self._token_price = new_token_price
 
