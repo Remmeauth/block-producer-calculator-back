@@ -1,7 +1,6 @@
 """
 Provide implementation of the returning on investment.
 """
-from calculator.constants import FOUR_YEARS_IN_MONTHS
 from calculator.domain.block import (
     BlockProducer,
     BlockReward,
@@ -26,21 +25,48 @@ class Roi:
         self.block_reward = block_reward
         self.block_producer = block_producer
 
-    def calculate(self):
+    @staticmethod
+    def _get_percent_in_tokens(statistics_per_month):
+        """
+        Get percent of returning on investment in tokens.
+        """
+        first_month_statistics, *_, last_month_statistics = statistics_per_month
+
+        first_month_block_producer_stake_in_tokens = first_month_statistics.get('block_producer_stake_in_tokens')
+        last_month_block_producer_stake_in_tokens = last_month_statistics.get('block_producer_stake_in_tokens')
+
+        profit_in_tokens = last_month_block_producer_stake_in_tokens - first_month_block_producer_stake_in_tokens
+        roi_percent_in_tokens = profit_in_tokens * 100 / first_month_block_producer_stake_in_tokens
+
+        return roi_percent_in_tokens
+
+    @staticmethod
+    def _get_percent_in_fiat(statistics_per_month):
+        """
+        Get percent of returning on investment in fiat.
+        """
+        first_month_statistics, *_, last_month_statistics = statistics_per_month
+
+        first_month_block_producer_stake_in_fiat = first_month_statistics.get('block_producer_stake_in_fiat')
+        last_month_block_producer_stake_in_fiat = last_month_statistics.get('block_producer_stake_in_fiat')
+
+        profit_in_fiat = last_month_block_producer_stake_in_fiat - first_month_block_producer_stake_in_fiat
+        roi_percent_in_fiat = profit_in_fiat * 100 / first_month_block_producer_stake_in_fiat
+
+        return roi_percent_in_fiat
+
+    def calculate(self, months):
         """
         Calculate returning on investment for 4 years.
         """
-        token_percent_growth = 10
-        token_percent_growth_decrease_percent = 2
-
         month = 1
 
         roi = {
             'statistics_per_month': [],
-            'percent': 0,
+            'percents': {},
         }
 
-        while month != FOUR_YEARS_IN_MONTHS + 1:
+        while month != months + 1:
 
             block_producer_reward = BlockProducerReward(
                 economy=self.economy, block_reward=self.block_reward, block_producer=self.block_producer,
@@ -55,28 +81,25 @@ class Roi:
 
             roi['statistics_per_month'].append({
                 'month': month,
+                'block_producer_stake_in_tokens': self.block_producer.stake,
+                'block_producer_stake_in_fiat': self.block_producer.stake * self.economy.token_price,
                 'month_reward_in_tokens': month_reward_in_tokens,
                 'month_reward_in_fiat': month_reward_in_tokens * self.economy.token_price,
                 'token_price': self.economy.token_price,
-                'token_price_growth_percent': token_percent_growth,
-                'block_producer_stake': self.block_producer.stake,
             })
 
             self.block_producer.stake += month_reward_in_tokens
-            self.economy.token_price = self.economy.token_price * (100 + token_percent_growth) / 100
+            self.economy.token_price = self.economy.token_price * (100 + self.economy.token_price_growth_percent) / 100
 
             month += 1
-            token_percent_growth -= (token_percent_growth * token_percent_growth_decrease_percent / 100)
 
-        first_month_statistics, *_, last_month_statistics = roi.get('statistics_per_month')
-        first_month_block_producer_stake = first_month_statistics.get('block_producer_stake')
-        last_month_block_producer_stake = last_month_statistics.get('block_producer_stake')
-
-        profit = last_month_block_producer_stake - first_month_block_producer_stake
-        roi_percent = profit * 100 / first_month_block_producer_stake
+        statistics_per_month = roi.get('statistics_per_month')
 
         roi.update({
-          'percent': roi_percent,
+          'percents': {
+              'tokens': self._get_percent_in_tokens(statistics_per_month=statistics_per_month),
+              'fiat': self._get_percent_in_fiat(statistics_per_month=statistics_per_month),
+          },
         })
 
         return roi

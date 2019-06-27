@@ -45,14 +45,26 @@ $ curl -X POST 127.0.0.1:8000/profit/month \
 
 `POST | /profit/roi` — calculate returning on investment for 4 years.
 
+| Arguments                     | Type    | Required | Description                                                        |
+| :---------------------------: | :-----: | :------: | ------------------------------------------------------------------ |
+| money_per_month               | Integer | Yes      | How much money comes into blockchain per month.                    |
+| token_price                   | Float   | Yes      | Token price.                                                       |
+| token_price_growth_percent    | Integer | Yes      | Token price growth percent.                                        |
+| all_block_producers_stakes    | Integer | Yes      | All block producers stakes number in the blockchain besides you.   |
+| active_block_producers_votes  | Integer | Yes      | Active block producers votes number in the blockchain besides you. |
+| stake                         | Integer | Yes      | Your block producer's stake number.                                |
+| votes                         | Integer | Yes      | Your block producer's votes number.                                |
+
 ```bash
 $ curl -X POST 127.0.0.1:8000/profit/roi \
       -H "Accept: application/json" \
       -H "Content-type: application/json" \
       -d $'{
+            "months": 12,
             "economy": {
                 "money_per_month": 50000,
                 "token_price": 0.0071,
+                "token_price_growth_percent": 3,
                 "all_block_producers_stakes": 350000000,
                 "active_block_producers_votes": 300000000
             },
@@ -63,24 +75,27 @@ $ curl -X POST 127.0.0.1:8000/profit/roi \
          }' | python -m json.tool
 {
     'result': {
-        'percent': 26.220804592280146,
+        'percents': {
+            'fiat': 64.73746422445299,
+            'tokens': 19.00984920867224
+        },
         'statistics_per_month': [
             {
-                'block_producer_stake': 300000,
+                'block_producer_stake_in_fiat': 2130.0,
+                'block_producer_stake_in_tokens': 300000,
                 'month': 1,
                 'month_reward_in_fiat': 39.964317726236075,
                 'month_reward_in_tokens': 5628.777144540292,
-                'token_price': 0.0071,
-                'token_price_growth_percent': 10
+                'token_price': 0.0071
             },
             ...
             {
-                'block_producer_stake': 378662.41377684043,
-                'month': 48,
-                'month_reward_in_fiat': 47.8153284351674,
-                'month_reward_in_tokens': 347.90929819234447,
-                'token_price': 0.13743619007484045,
-                'token_price_growth_percent': 3.8692390084819794
+                'block_producer_stake_in_fiat': 3508.9079879808487,
+                'block_producer_stake_in_tokens': 357029.5476260167,
+                'month': 12,
+                'month_reward_in_fiat': 45.65658183829063,
+                'month_reward_in_tokens': 4645.533258697715,
+                'token_price': 0.009828060482143564
             }
         ]
     }

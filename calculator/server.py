@@ -118,8 +118,10 @@ def calculate_roi():
     request_parameters = request.get_json()
 
     arguments, errors = CalculateRoiForm().load({
+        'months': request_parameters.get('months'),
         'money_per_month': request_parameters.get('economy').get('money_per_month'),
         'token_price': request_parameters.get('economy').get('token_price'),
+        'token_price_growth_percent': request_parameters.get('economy').get('token_price_growth_percent'),
         'all_block_producers_stakes': request_parameters.get('economy').get('all_block_producers_stakes'),
         'active_block_producers_votes': request_parameters.get('economy').get('active_block_producers_votes'),
         'stake': request_parameters.get('block_producer').get('stake'),
@@ -129,8 +131,10 @@ def calculate_roi():
     if errors:
         return jsonify({'errors': errors}), HTTPStatus.BAD_REQUEST
 
+    months = arguments.get('months')
     money_per_month = arguments.get('money_per_month')
     token_price = arguments.get('token_price')
+    token_price_growth_percent = arguments.get('token_price_growth_percent')
     all_block_producers_stakes = arguments.get('all_block_producers_stakes')
     active_block_producers_votes = arguments.get('active_block_producers_votes')
     block_producer_stake = arguments.get('stake')
@@ -139,6 +143,7 @@ def calculate_roi():
     economy = Economy(
         money_per_month=money_per_month,
         token_price=token_price,
+        token_price_growth_percent=token_price_growth_percent,
         all_block_producers_stakes=all_block_producers_stakes,
         active_block_producers_votes=active_block_producers_votes,
     )
@@ -146,7 +151,7 @@ def calculate_roi():
     block_producer = BlockProducer(stake=block_producer_stake, votes=block_producer_votes)
 
     roi = Roi(economy=economy, block_reward=block_reward, block_producer=block_producer)
-    result = roi.calculate()
+    result = roi.calculate(months=months)
 
     return jsonify({'result': result}), HTTPStatus.OK
 

@@ -14,6 +14,7 @@ class Economy:
             token_price: float,
             all_block_producers_stakes: int,
             active_block_producers_votes: int,
+            token_price_growth_percent: int = None,
     ):
         """
         Constructor.
@@ -22,6 +23,7 @@ class Economy:
         self._token_price = token_price
         self._all_block_producers_stakes = all_block_producers_stakes
         self._active_block_producers_votes = active_block_producers_votes
+        self._token_price_growth_percent = token_price_growth_percent
 
     @property
     def token_price(self):
@@ -36,6 +38,13 @@ class Economy:
         Set token price.
         """
         self._token_price = new_token_price
+
+    @property
+    def token_price_growth_percent(self):
+        """
+        Get token price growth percent.
+        """
+        return self._token_price_growth_percent
 
     @property
     def money_per_month(self):
