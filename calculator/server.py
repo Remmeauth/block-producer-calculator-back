@@ -16,7 +16,7 @@ from flask_cors import CORS
 from calculator.constants import (
     HOUR_IN_SECONDS,
     REMME_TOKEN_PRICE_IN_USD_COIN_MARKET_CAP_API_URL,
-)
+    TO_REWARDS_POOL)
 from calculator.domain.block import (
     BlockProducer,
     BlockReward,
@@ -87,6 +87,7 @@ def calculate_profit_per_month():
         token_price=token_price,
         all_block_producers_stakes=all_block_producers_stakes,
         active_block_producers_votes=active_block_producers_votes,
+        to_rewards_pool=TO_REWARDS_POOL
     )
     block_reward = BlockReward(economy=economy)
     block_producer = BlockProducer(stake=block_producer_stake, votes=block_producer_votes)
@@ -146,6 +147,7 @@ def calculate_roi():
         token_price_growth_percent=token_price_growth_percent,
         all_block_producers_stakes=all_block_producers_stakes,
         active_block_producers_votes=active_block_producers_votes,
+        to_rewards_pool=TO_REWARDS_POOL,
     )
     block_reward = BlockReward(economy=economy)
     block_producer = BlockProducer(stake=block_producer_stake, votes=block_producer_votes)
