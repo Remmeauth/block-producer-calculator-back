@@ -15,6 +15,7 @@ class Economy:
             all_block_producers_stakes: int,
             active_block_producers_votes: int,
             token_price_growth_percent: int = None,
+            to_rewards_pool: int = None,
     ):
         """
         Constructor.
@@ -24,6 +25,7 @@ class Economy:
         self._all_block_producers_stakes = all_block_producers_stakes
         self._active_block_producers_votes = active_block_producers_votes
         self._token_price_growth_percent = token_price_growth_percent
+        self._to_rewards_pool = to_rewards_pool
 
     @property
     def token_price(self):
@@ -89,3 +91,10 @@ class Economy:
         Get an active block producers reward coefficient.
         """
         return 0.2
+
+    @property
+    def to_rewards_pool(self):
+        """
+        Get rewards pool.
+        """
+        return self._to_rewards_pool
