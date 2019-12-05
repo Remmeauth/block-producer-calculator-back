@@ -90,7 +90,7 @@ class Economy:
         """
         Get an active block producers reward coefficient.
         """
-        return 0.2
+        return 0.3
 
     @property
     def to_rewards_pool(self):
