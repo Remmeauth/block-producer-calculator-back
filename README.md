@@ -85,7 +85,8 @@ $ curl -X POST 127.0.0.1:8000/profit/roi \
                 'block_producer_stake_in_tokens': 300000,
                 'month': 1,
                 'month_reward_in_fiat': 39.964317726236075,
-                'month_reward_in_tokens': 5628.777144540292,
+                'month_reward_from_pool': 2000,
+                'month_reward_from_node': 3000,
                 'token_price': 0.0071
             },
             ...

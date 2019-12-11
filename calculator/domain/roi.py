@@ -33,7 +33,8 @@ class Roi:
         first_month_statistics, *_, last_month_statistics = statistics_per_month
 
         first_month_block_producer_stake_in_tokens = first_month_statistics.get('block_producer_stake_in_tokens')
-        last_month_block_producer_stake_in_tokens = last_month_statistics.get('block_producer_stake_in_tokens')
+        last_month_block_producer_stake_in_tokens = last_month_statistics.get('block_producer_stake_in_tokens') +\
+            last_month_statistics.get('month_reward_from_node') + last_month_statistics.get('month_reward_from_pool')
 
         profit_in_tokens = last_month_block_producer_stake_in_tokens - first_month_block_producer_stake_in_tokens
         roi_percent_in_tokens = profit_in_tokens * 100 / first_month_block_producer_stake_in_tokens
@@ -48,7 +49,8 @@ class Roi:
         first_month_statistics, *_, last_month_statistics = statistics_per_month
 
         first_month_block_producer_stake_in_fiat = first_month_statistics.get('block_producer_stake_in_fiat')
-        last_month_block_producer_stake_in_fiat = last_month_statistics.get('block_producer_stake_in_fiat')
+        last_month_block_producer_stake_in_fiat = last_month_statistics.get('block_producer_stake_in_fiat') +\
+            last_month_statistics.get('month_reward_in_fiat')
 
         profit_in_fiat = last_month_block_producer_stake_in_fiat - first_month_block_producer_stake_in_fiat
         roi_percent_in_fiat = profit_in_fiat * 100 / first_month_block_producer_stake_in_fiat
@@ -76,14 +78,19 @@ class Roi:
                 economy=self.economy, block_reward=self.block_reward, block_producer=self.block_producer,
             )
 
-            month_reward_in_tokens = \
+            reward_from_pool = \
+                (block_producer_reward.get_from_pool() + active_block_producer_reward.get_from_pool()) \
+                * self.economy.blocks_per_month
+            reward_from_node = \
                 (block_producer_reward.get() + active_block_producer_reward.get()) * self.economy.blocks_per_month
+            month_reward_in_tokens = reward_from_pool + reward_from_node
 
             roi['statistics_per_month'].append({
                 'month': month,
                 'block_producer_stake_in_tokens': self.block_producer.stake,
                 'block_producer_stake_in_fiat': self.block_producer.stake * self.economy.token_price,
-                'month_reward_in_tokens': month_reward_in_tokens,
+                'month_reward_from_pool': reward_from_pool,
+                'month_reward_from_node': reward_from_node,
                 'month_reward_in_fiat': month_reward_in_tokens * self.economy.token_price,
                 'token_price': self.economy.token_price,
             })
